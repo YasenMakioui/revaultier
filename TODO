@@ -1,0 +1,4 @@
+[] Crear la parte de autenticación con sesiones usando gorilla sessions
+[] Añadir estructura basica para comunicar con la base de datos
+[] Implementar algun framework de CSS sencillo para dar estilos
+[] Iniciar creación de revaultierctl usando alguna herramienta de go para crear CLI -> Cobra

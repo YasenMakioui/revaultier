@@ -1,0 +1,11 @@
+<p class="text-danger">{{.message}}</p>
+{{ if .passwordFormat }}
+<div class="">
+    <p>password requirements:</p>
+    <ul>
+        <li>More than 8 chars</li>
+        <li>Add special chars</li>
+        <li>At least one capital letter and numbers</li>
+    </ul>
+</div>
+{{ end }}
