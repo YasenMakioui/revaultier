@@ -3,6 +3,7 @@ package server
 import (
 	"html/template"
 	"io"
+	"net/http"
 
 	"github.com/YasenMakioui/revaultier/internal/root"
 	"github.com/YasenMakioui/revaultier/internal/user"
@@ -13,6 +14,18 @@ import (
 
 type TemplateRenderer struct {
 	templates *template.Template
+}
+
+//test session middleware
+
+// func requireSession(next echo.HandlerFunc) echo.HandlerFunc {
+// 	return func(c echo.Context) {
+// 		return nil
+// 	}
+// }
+
+func protectedPage(c echo.Context) error {
+	return c.NoContent(http.StatusOK)
 }
 
 func (t *TemplateRenderer) Render(w io.Writer, name string, data interface{}, c echo.Context) error {
@@ -39,6 +52,7 @@ func NewRouter(rootHandler *root.RootHandler, userHandler *user.UserHandler) *ec
 	e.GET("/login", userHandler.ShowLoginPage)
 	e.POST("/login", userHandler.Login)
 	e.GET("/logout", userHandler.Logout)
+	e.GET("/protected", protectedPage, requireSession)
 
 	return e
 }
