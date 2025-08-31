@@ -28,7 +28,7 @@ func (h *UserHandler) ShowSignupPage(c echo.Context) error {
 }
 
 func (h *UserHandler) Signup(c echo.Context) error {
-	email := c.FormValue("email")
+	username := c.FormValue("username")
 	password := c.FormValue("password")
 
 	// Validate credentials
@@ -39,11 +39,11 @@ func (h *UserHandler) Signup(c echo.Context) error {
 
 	// Validate if user exists
 
-	if h.userService.UserExists(email) {
+	if h.userService.UserExists(username) {
 		return c.Render(http.StatusOK, "signupError.html", map[string]any{"message": "User Exists"})
 	}
 
-	if err := h.userService.Signup(email, password); err != nil {
+	if err := h.userService.Signup(username, password); err != nil {
 		return c.Render(http.StatusOK, "signupError.html", map[string]any{"message": "Error while signing up"})
 	}
 
@@ -65,7 +65,15 @@ func (h *UserHandler) Login(c echo.Context) error {
 		return c.NoContent(http.StatusInternalServerError)
 	}
 
-	return c.NoContent(http.StatusOK)
+	return c.Redirect(http.StatusPermanentRedirect, "/")
+}
+
+func (h *UserHandler) Logout(c echo.Context) error {
+	if err := h.userService.DeleteSession(c); err != nil {
+		return c.NoContent(http.StatusInternalServerError)
+	}
+
+	return c.Redirect(http.StatusPermanentRedirect, "/")
 }
 
 // func (h *Handler) Authenticate(c echo.Context) error {

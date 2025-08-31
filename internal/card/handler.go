@@ -1,5 +1,5 @@
 package card
 
-type UserHandler struct {
-	userService *UserService
-}
+// type UserHandler struct {
+// 	userService *UserService
+// }

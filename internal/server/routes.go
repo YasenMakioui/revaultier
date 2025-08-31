@@ -4,6 +4,7 @@ import (
 	"html/template"
 	"io"
 
+	"github.com/YasenMakioui/revaultier/internal/root"
 	"github.com/YasenMakioui/revaultier/internal/user"
 	"github.com/gorilla/sessions"
 	"github.com/labstack/echo-contrib/session"
@@ -18,7 +19,7 @@ func (t *TemplateRenderer) Render(w io.Writer, name string, data interface{}, c 
 	return t.templates.ExecuteTemplate(w, name, data)
 }
 
-func NewRouter(userHandler *user.UserHandler) *echo.Echo {
+func NewRouter(rootHandler *root.RootHandler, userHandler *user.UserHandler) *echo.Echo {
 	e := echo.New()
 	e.Use(session.Middleware(sessions.NewCookieStore([]byte("secret"))))
 
@@ -30,15 +31,14 @@ func NewRouter(userHandler *user.UserHandler) *echo.Echo {
 
 	// e.GET("/login", userHandler.ShowLoginPage)
 	// e.POST("/login", userHandler.Authenticate)
-	e.GET("/", func(c echo.Context) error {
-		return c.Render(200, "index.html", map[string]any{
-			"title": "Home",
-		})
-	})
+	e.GET("/", rootHandler.ShowRootPage)
+	e.POST("/", rootHandler.ShowRootPage)
 	//e.GET("/revaultier/cards", cardHandler.ShowCardsPage)
 	e.GET("/signup", userHandler.ShowSignupPage)
 	e.POST("/signup", userHandler.Signup)
 	e.GET("/login", userHandler.ShowLoginPage)
 	e.POST("/login", userHandler.Login)
+	e.GET("/logout", userHandler.Logout)
+
 	return e
 }

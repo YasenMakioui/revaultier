@@ -2,7 +2,12 @@
 <body>
     {{template "header"}}
     <h1>ReVaultier</h1>
+    {{ if .loggedIn }}
+    <p>Welcome {{ .username }}</p>
+    <a href="/logout">logout</a>
+    {{ else }}
     <a href="/login">login</a>
+    {{ end }}
     {{template "footer"}}
 </body>
 </html>
