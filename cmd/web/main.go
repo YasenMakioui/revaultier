@@ -21,9 +21,9 @@ func main() {
 	authService := auth.NewAuthService(authRepository, []byte("secretkey")) // temp, will be taken from config
 	authHandler := auth.NewAuthHandler(authService)
 
-	e := server.NewRouter(rootHandler, userHandler, authHandler)
+	e := server.NewServer([]byte("secretkey"), rootHandler, userHandler, authHandler)
 
-	if err := e.Start(":8080"); err != nil {
-		e.Logger.Fatal("could not start server: ", err)
+	if err := e.Router.Start(":8080"); err != nil {
+		e.Router.Logger.Fatal("could not start server: ", err)
 	}
 }
