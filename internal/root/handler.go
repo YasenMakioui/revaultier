@@ -12,10 +12,6 @@ func NewRootHandler() *RootHandler {
 	return &RootHandler{}
 }
 
-// func (r *RootHandler) ShowRootPage(c echo.Context) error {
-// 	return c.Render(http.StatusOK, "index.html", map[any]any{})
-// }
-
 func (h *RootHandler) RevaultierStatus(c echo.Context) error {
 	return c.JSON(http.StatusOK, map[string]string{
 		"version": "v1.0.0",

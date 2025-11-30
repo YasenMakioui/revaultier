@@ -3,6 +3,7 @@ package auth
 import (
 	"context"
 	"errors"
+	"revaultier/configuration"
 	"time"
 
 	"github.com/golang-jwt/jwt/v5"
@@ -12,13 +13,13 @@ import (
 )
 
 type AuthService struct {
-	secretKey      []byte
+	cfg            *configuration.Config
 	authRepository *AuthRepository
 }
 
-func NewAuthService(authRepository *AuthRepository, secretKey []byte) *AuthService {
+func NewAuthService(cfg *configuration.Config, authRepository *AuthRepository) *AuthService {
 	return &AuthService{
-		secretKey:      secretKey,
+		cfg:            cfg,
 		authRepository: authRepository,
 	}
 }
@@ -90,7 +91,7 @@ func (s *AuthService) GenerateTokenSerivce(username string) (string, error) {
 			"exp":      time.Now().Add(time.Hour * 24).Unix(),
 		})
 
-	tokenString, err := token.SignedString(s.secretKey)
+	tokenString, err := token.SignedString([]byte(s.cfg.Auth.SecretKey))
 
 	if err != nil {
 		return "", err

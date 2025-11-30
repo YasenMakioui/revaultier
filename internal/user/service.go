@@ -1,9 +1,12 @@
 package user
 
+import "revaultier/configuration"
+
 type UserService struct {
+	cfg            *configuration.Config
 	userRepository *UserRepository
 }
 
-func NewUserService(ur *UserRepository) *UserService {
-	return &UserService{userRepository: ur}
+func NewUserService(cfg *configuration.Config, ur *UserRepository) *UserService {
+	return &UserService{cfg: cfg, userRepository: ur}
 }

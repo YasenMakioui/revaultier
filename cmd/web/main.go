@@ -1,6 +1,7 @@
 package main
 
 import (
+	"revaultier/configuration"
 	"revaultier/database"
 	"revaultier/internal/auth"
 	"revaultier/internal/root"
@@ -10,25 +11,25 @@ import (
 
 func main() {
 
-	cfg, err := server.LoadConfig()
+	cfg, err := configuration.LoadConfig()
 
 	if err != nil {
 		panic(err)
 	}
 
-	database := database.NewDatabase(cfg.Database.Database)
+	database := database.NewDatabase(cfg)
 
 	rootHandler := root.NewRootHandler()
 
 	userRepository := user.NewUserRepository(database)
-	userService := user.NewUserService(userRepository)
+	userService := user.NewUserService(cfg, userRepository)
 	userHandler := user.NewUserHandler(userService)
 
 	authRepository := auth.NewAuthRepository(database)
-	authService := auth.NewAuthService(authRepository, []byte(cfg.Auth.SecretKey)) // temp, will be taken from config
+	authService := auth.NewAuthService(cfg, authRepository)
 	authHandler := auth.NewAuthHandler(authService)
 
-	e := server.NewServer([]byte("secretkey"), rootHandler, userHandler, authHandler)
+	e := server.NewServer(cfg, rootHandler, userHandler, authHandler)
 
 	if err := e.Router.Start(":8080"); err != nil {
 		e.Router.Logger.Fatal("could not start server: ", err)

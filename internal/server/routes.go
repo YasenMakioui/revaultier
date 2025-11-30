@@ -1,6 +1,7 @@
 package server
 
 import (
+	"revaultier/configuration"
 	"revaultier/internal/auth"
 	"revaultier/internal/root"
 	"revaultier/internal/user"
@@ -11,23 +12,23 @@ import (
 )
 
 type Server struct {
-	SecretKey []byte
-	Router    *echo.Echo
+	cfg    *configuration.Config
+	Router *echo.Echo
 	// params
 }
 
-func NewServer(secretkey []byte, rootHandler *root.RootHandler, userHandler *user.UserHandler, authHandler *auth.AuthHandler) *Server {
+func NewServer(cfg *configuration.Config, rootHandler *root.RootHandler, userHandler *user.UserHandler, authHandler *auth.AuthHandler) *Server {
 	e := echo.New()
 
 	e.Use(middleware.Logger())
 	e.Use(middleware.Recover())
 
-	e.GET("/", rootHandler.RevaultierStatus, echojwt.JWT(secretkey))
+	e.GET("/", rootHandler.RevaultierStatus, echojwt.JWT([]byte(cfg.Auth.SecretKey)))
 	e.POST("/login", authHandler.LoginHandler)
 	e.POST("/signup", authHandler.SignupHandler)
 
 	return &Server{
-		SecretKey: secretkey,
-		Router:    e,
+		cfg:    cfg,
+		Router: e,
 	}
 }
