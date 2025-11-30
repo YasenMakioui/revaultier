@@ -21,6 +21,15 @@ func NewDatabase(cfg *configuration.Config) *sql.DB {
         username     TEXT   NOT NULL,
         password TEXT    NOT NULL
     );
+
+	CREATE TABLE IF NOT EXISTS vault (
+		id TEXT PRIMARY KEY,
+		owner_id TEXT NOT NULL,
+		name TEXT NOT NULL,
+		description TEXT,
+		created_at DATETIME NOT NULL,
+		FOREIGN KEY (owner_id) REFERENCES user(id)
+	);
     `
 
 	_, err = db.Exec(sqlStmt)

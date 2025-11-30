@@ -7,6 +7,7 @@ import (
 	"revaultier/internal/root"
 	"revaultier/internal/server"
 	"revaultier/internal/user"
+	"revaultier/internal/vault"
 )
 
 func main() {
@@ -29,7 +30,11 @@ func main() {
 	authService := auth.NewAuthService(cfg, authRepository)
 	authHandler := auth.NewAuthHandler(authService)
 
-	e := server.NewServer(cfg, rootHandler, userHandler, authHandler)
+	vaultRepository := vault.NewVaultRepository(database)
+	vaultService := vault.NewVaultService(cfg, vaultRepository)
+	vaultHandler := vault.NewVaultHandler(vaultService)
+
+	e := server.NewServer(cfg, rootHandler, userHandler, authHandler, vaultHandler)
 
 	if err := e.Router.Start(":8080"); err != nil {
 		e.Router.Logger.Fatal("could not start server: ", err)

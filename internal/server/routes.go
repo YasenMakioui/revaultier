@@ -5,6 +5,7 @@ import (
 	"revaultier/internal/auth"
 	"revaultier/internal/root"
 	"revaultier/internal/user"
+	"revaultier/internal/vault"
 
 	echojwt "github.com/labstack/echo-jwt/v4"
 	"github.com/labstack/echo/v4"
@@ -17,7 +18,7 @@ type Server struct {
 	// params
 }
 
-func NewServer(cfg *configuration.Config, rootHandler *root.RootHandler, userHandler *user.UserHandler, authHandler *auth.AuthHandler) *Server {
+func NewServer(cfg *configuration.Config, rootHandler *root.RootHandler, userHandler *user.UserHandler, authHandler *auth.AuthHandler, vaultHandler *vault.VaultHandler) *Server {
 	e := echo.New()
 
 	e.Use(middleware.Logger())
@@ -28,7 +29,10 @@ func NewServer(cfg *configuration.Config, rootHandler *root.RootHandler, userHan
 	e.GET("/", rootHandler.RevaultierStatus, echojwt.JWT(jwtSigningKey))
 	e.POST("/login", authHandler.LoginHandler)
 	e.POST("/signup", authHandler.SignupHandler)
-	//e.GET("/vault", )
+	e.GET("/vault", vaultHandler.GetVaultsHandler)
+
+	// protected
+	r := e.Group("/api")
 
 	return &Server{
 		cfg:    cfg,
