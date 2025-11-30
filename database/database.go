@@ -3,12 +3,13 @@ package database
 import (
 	"database/sql"
 	"log"
+	"revaultier/configuration"
 
 	_ "github.com/mattn/go-sqlite3"
 )
 
-func NewDatabase(path string) *sql.DB {
-	db, err := sql.Open("sqlite3", path)
+func NewDatabase(cfg *configuration.Config) *sql.DB {
+	db, err := sql.Open("sqlite3", cfg.Database.Database)
 	if err != nil {
 		log.Fatal(err)
 	}

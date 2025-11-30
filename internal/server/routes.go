@@ -23,9 +23,12 @@ func NewServer(cfg *configuration.Config, rootHandler *root.RootHandler, userHan
 	e.Use(middleware.Logger())
 	e.Use(middleware.Recover())
 
-	e.GET("/", rootHandler.RevaultierStatus, echojwt.JWT([]byte(cfg.Auth.SecretKey)))
+	jwtSigningKey := []byte(cfg.Auth.SecretKey)
+
+	e.GET("/", rootHandler.RevaultierStatus, echojwt.JWT(jwtSigningKey))
 	e.POST("/login", authHandler.LoginHandler)
 	e.POST("/signup", authHandler.SignupHandler)
+	//e.GET("/vault", )
 
 	return &Server{
 		cfg:    cfg,
