@@ -33,7 +33,13 @@ func (h *AuthHandler) LoginHandler(c echo.Context) error {
 		return c.JSON(http.StatusUnauthorized, ErrorResponse{Error: "failed authentication"})
 	}
 
-	token, err := h.AuthService.GenerateTokenSerivce(req.Username)
+	uuid, err := h.AuthService.GetUserUUIDService(ctx, req.Username)
+
+	if err != nil {
+		return c.JSON(http.StatusInternalServerError, ErrorResponse{Error: "could not authenticate"})
+	}
+
+	token, err := h.AuthService.GenerateTokenSerivce(req.Username, uuid) // should pass the uuid and add it in the "sub" claim
 
 	if err != nil {
 		log.Error(err)

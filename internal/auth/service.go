@@ -82,13 +82,14 @@ func (s *AuthService) SignupService(ctx context.Context, username string, passwo
 	return nil
 }
 
-func (s *AuthService) GenerateTokenSerivce(username string) (string, error) {
+func (s *AuthService) GenerateTokenSerivce(username string, uuid string) (string, error) {
 
 	token := jwt.NewWithClaims(
 		jwt.SigningMethodHS256,
 		jwt.MapClaims{
 			"username": username,
 			"exp":      time.Now().Add(time.Hour * 24).Unix(),
+			"sub":      uuid,
 		})
 
 	tokenString, err := token.SignedString([]byte(s.cfg.Auth.SecretKey))
@@ -98,6 +99,16 @@ func (s *AuthService) GenerateTokenSerivce(username string) (string, error) {
 	}
 
 	return tokenString, nil
+}
+
+func (s *AuthService) GetUserUUIDService(ctx context.Context, username string) (string, error) {
+	uuid, err := s.authRepository.GetUUID(ctx, username)
+
+	if err != nil {
+		return "", errors.New("could not retrieve uuid")
+	}
+
+	return uuid, nil
 }
 
 func (s *AuthService) verifyPassword(passwordHash string, password string) error {

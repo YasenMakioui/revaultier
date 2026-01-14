@@ -3,6 +3,7 @@ package server
 import (
 	"revaultier/configuration"
 	"revaultier/internal/auth"
+	"revaultier/internal/card"
 	"revaultier/internal/root"
 	"revaultier/internal/user"
 	"revaultier/internal/vault"
@@ -18,7 +19,7 @@ type Server struct {
 	// params
 }
 
-func NewServer(cfg *configuration.Config, rootHandler *root.RootHandler, userHandler *user.UserHandler, authHandler *auth.AuthHandler, vaultHandler *vault.VaultHandler) *Server {
+func NewServer(cfg *configuration.Config, rootHandler *root.RootHandler, userHandler *user.UserHandler, authHandler *auth.AuthHandler, vaultHandler *vault.VaultHandler, cardHandler *card.CardHandler) *Server {
 	e := echo.New()
 
 	e.Use(middleware.Logger())
@@ -26,13 +27,14 @@ func NewServer(cfg *configuration.Config, rootHandler *root.RootHandler, userHan
 
 	jwtSigningKey := []byte(cfg.Auth.SecretKey)
 
-	e.GET("/", rootHandler.RevaultierStatus, echojwt.JWT(jwtSigningKey))
+	e.GET("/", rootHandler.RevaultierStatus)
 	e.POST("/login", authHandler.LoginHandler)
 	e.POST("/signup", authHandler.SignupHandler)
-	e.GET("/vault", vaultHandler.GetVaultsHandler)
-
-	// protected
-	r := e.Group("/api")
+	e.GET("/vault", vaultHandler.GetVaultsHandler, echojwt.JWT(jwtSigningKey))
+	e.GET("/vault/:id", vaultHandler.GetVaultHandler, echojwt.JWT(jwtSigningKey))
+	//e.POST("/vault", vaultHandler.CreateVaultHandler, echojwt.JWT(jwtSigningKey))
+	//e.GET("/vault/:id/card", cardHandler.GetCardsHandler, echojwt.JWT(jwtSigningKey))
+	e.GET("/vault/:id/card/:cardId", cardHandler.GetCardHandler, echojwt.JWT(jwtSigningKey))
 
 	return &Server{
 		cfg:    cfg,

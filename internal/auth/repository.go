@@ -46,6 +46,21 @@ func (r *AuthRepository) GetUser(ctx context.Context, username string) (User, er
 	return user, err
 }
 
+func (r *AuthRepository) GetUUID(ctx context.Context, username string) (string, error) {
+
+	sqlStmt := "SELECT id from user WHERE username=?"
+
+	var uuid string
+
+	err := r.dbconn.QueryRowContext(ctx, sqlStmt, username).Scan(&uuid)
+
+	if err != nil {
+		return "", err
+	}
+
+	return uuid, err
+}
+
 func (r *AuthRepository) InserUser(ctx context.Context, userId string, username string, passwordHash string) error {
 	sqlStmt := "INSERT INTO user VALUES(?,?,?)"
 

@@ -29,3 +29,23 @@ func (s *VaultService) GetVaultService(ctx context.Context, vaultId string, owne
 
 	return vault, nil
 }
+
+func (s *VaultService) GetVaultsService(ctx context.Context, ownerId string) ([]Vault, error) {
+	vaults, err := s.VaultRepository.GetVaults(ctx, ownerId)
+
+	if err != nil {
+		return vaults, err
+	}
+
+	return vaults, err
+}
+
+func (s *VaultService) CreateVaultService(ctx context.Context, ownerId string, name string, description string, created_at string) (Vault, error) {
+	vault, err := s.VaultRepository.InsertVault(ctx, ownerId, name, description, created_at)
+
+	if err != nil {
+		return vault, err
+	}
+
+	return vault, nil
+}
