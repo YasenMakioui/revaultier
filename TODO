@@ -1,0 +1,4 @@
+Add the sub claim in JWT to add the uuid instead of the username - DONE
+Add card table to the database schema - DONE
+Add post vault 
+Add card resource 
