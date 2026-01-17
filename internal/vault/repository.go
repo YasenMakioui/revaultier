@@ -77,3 +77,22 @@ func (r *VaultRepository) InsertVault(ctx context.Context, vault Vault) (Vault, 
 
 	return vault, nil
 }
+
+func (r *VaultRepository) DeleteVault(ctx context.Context, vaultId string) error {
+	sqlStmt := "DELETE FROM vault WHERE id = ?"
+
+	result, err := r.dbconn.ExecContext(ctx, sqlStmt, vaultId)
+
+	if err != nil {
+		return err
+	}
+
+	rowsAffected, _ := result.RowsAffected()
+
+	if rowsAffected == 0 {
+		log.Error("tried to delete a non-existent vault")
+		return errors.New("vault not found")
+	}
+
+	return nil
+}
