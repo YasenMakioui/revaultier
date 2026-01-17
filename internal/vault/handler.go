@@ -80,6 +80,19 @@ func (h *VaultHandler) CreateVaultHandler(c echo.Context) error {
 	return c.JSON(http.StatusOK, vault)
 }
 
+func (h *VaultHandler) DeleteVaultHandler(c echo.Context) error {
+
+	ctx := c.Request().Context()
+
+	vaultId := c.Param("id")
+
+	if err := h.VaultService.DeleteVaultService(ctx, vaultId); err != nil {
+		return c.NoContent(http.StatusNotFound)
+	}
+
+	return c.NoContent(http.StatusOK)
+}
+
 func getUserId(c echo.Context) (string, error) {
 
 	token := c.Get("user").(*jwt.Token)

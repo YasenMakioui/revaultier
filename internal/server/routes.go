@@ -33,6 +33,7 @@ func NewServer(cfg *configuration.Config, rootHandler *root.RootHandler, userHan
 	e.GET("/vault", vaultHandler.GetVaultsHandler, echojwt.JWT(jwtSigningKey))
 	e.GET("/vault/:id", vaultHandler.GetVaultHandler, echojwt.JWT(jwtSigningKey))
 	e.POST("/vault", vaultHandler.CreateVaultHandler, echojwt.JWT(jwtSigningKey))
+	e.DELETE("/vault/:id", vaultHandler.DeleteVaultHandler, echojwt.JWT(jwtSigningKey))
 	//e.GET("/vault/:id/card", cardHandler.GetCardsHandler, echojwt.JWT(jwtSigningKey))
 	e.GET("/vault/:id/card/:cardId", cardHandler.GetCardHandler, echojwt.JWT(jwtSigningKey))
 

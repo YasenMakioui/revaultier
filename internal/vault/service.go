@@ -69,3 +69,12 @@ func (s *VaultService) CreateVaultService(ctx context.Context, owner_id string, 
 
 	return vault, nil
 }
+
+func (s *VaultService) DeleteVaultService(ctx context.Context, vaultId string) error {
+
+	if err := s.VaultRepository.DeleteVault(ctx, vaultId); err != nil {
+		return err
+	}
+
+	return nil
+}
