@@ -19,17 +19,13 @@ func (h *VaultHandler) GetVaultsHandler(c echo.Context) error {
 
 	ctx := c.Request().Context()
 
-	token := c.Get("user").(*jwt.Token)
-
-	claims := token.Claims.(jwt.MapClaims)
-
-	uuid, err := claims.GetSubject()
+	userId, err := getUserId(c)
 
 	if err != nil {
 		return c.JSON(http.StatusInternalServerError, ErrorResponse{Error: "no subject found in claims"})
 	}
 
-	vaults, err := h.VaultService.GetVaultsService(ctx, uuid)
+	vaults, err := h.VaultService.GetVaultsService(ctx, userId)
 
 	if err != nil {
 		return c.JSON(http.StatusInternalServerError, ErrorResponse{Error: "something went wrong"})
@@ -42,13 +38,7 @@ func (h *VaultHandler) GetVaultHandler(c echo.Context) error {
 
 	ctx := c.Request().Context()
 
-	// maybe move the token thing to a helper function to get the subject
-
-	token := c.Get("user").(*jwt.Token)
-
-	claims := token.Claims.(jwt.MapClaims)
-
-	userId, err := claims.GetSubject()
+	userId, err := getUserId(c)
 
 	if err != nil {
 		return c.JSON(http.StatusInternalServerError, ErrorResponse{Error: "no subject found in claims"})
@@ -67,19 +57,40 @@ func (h *VaultHandler) GetVaultHandler(c echo.Context) error {
 
 func (h *VaultHandler) CreateVaultHandler(c echo.Context) error {
 
-	//ctx := c.Request().Context()
+	ctx := c.Request().Context()
 
-	//token := Get("user").(*jwt.Token)
+	userId, err := getUserId(c)
 
-	//claims := token.Claims.(jwt.MapClaims)
+	if err != nil {
+		return c.JSON(http.StatusInternalServerError, ErrorResponse{Error: "no subject found in claims"})
+	}
 
-	//userId, err := claims.GetSubject()
+	v := new(VaultDTO)
 
-	//if err != nil {
-	//	return c.JSON(http.StatusInternalServerError, ErrorResponse{Error: "no subject found in claims"})
-	//}
+	if err := c.Bind(v); err != nil {
+		return c.JSON(http.StatusBadRequest, ErrorResponse{Error: "bad request"})
+	}
 
-	// get params from payload and validate
-	//vault, err := h.VaultService.CreateVaultService()
-	return nil
+	vault, err := h.VaultService.CreateVaultService(ctx, userId, v)
+
+	if err != nil {
+		return c.JSON(http.StatusBadRequest, ErrorResponse{Error: "bad request"})
+	}
+
+	return c.JSON(http.StatusOK, vault)
+}
+
+func getUserId(c echo.Context) (string, error) {
+
+	token := c.Get("user").(*jwt.Token)
+
+	claims := token.Claims.(jwt.MapClaims)
+
+	userId, err := claims.GetSubject()
+
+	if err != nil {
+		return "", err
+	}
+
+	return userId, nil
 }

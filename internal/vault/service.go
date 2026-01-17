@@ -5,6 +5,9 @@ import (
 	"database/sql"
 	"errors"
 	"revaultier/configuration"
+	"time"
+
+	"github.com/google/uuid"
 )
 
 type VaultService struct {
@@ -40,8 +43,25 @@ func (s *VaultService) GetVaultsService(ctx context.Context, ownerId string) ([]
 	return vaults, err
 }
 
-func (s *VaultService) CreateVaultService(ctx context.Context, ownerId string, name string, description string, created_at string) (Vault, error) {
-	vault, err := s.VaultRepository.InsertVault(ctx, ownerId, name, description, created_at)
+func (s *VaultService) CreateVaultService(ctx context.Context, owner_id string, v *VaultDTO) (Vault, error) {
+
+	if v.Name == "" {
+		return Vault{}, errors.New("name is empty")
+	}
+
+	vaultId := uuid.New().String()
+
+	createdAt := time.Now().Format("2006-01-02")
+
+	vault := Vault{
+		Id:          vaultId,
+		Owner_id:    owner_id,
+		Name:        v.Name,
+		Description: v.Description,
+		Created_at:  createdAt,
+	}
+
+	vault, err := s.VaultRepository.InsertVault(ctx, vault)
 
 	if err != nil {
 		return vault, err
