@@ -5,7 +5,7 @@ import (
 	"database/sql"
 	"errors"
 
-	"github.com/google/uuid"
+	"github.com/labstack/gommon/log"
 )
 
 type VaultRepository struct {
@@ -59,14 +59,10 @@ func (r *VaultRepository) GetVaults(ctx context.Context, ownerId string) ([]Vaul
 	return vaults, nil
 }
 
-func (r *VaultRepository) InsertVault(ctx context.Context, ownerId string, name string, description string, created_at string) (Vault, error) {
+func (r *VaultRepository) InsertVault(ctx context.Context, vault Vault) (Vault, error) {
 	sqlStmt := "INSERT INTO vault(id,owner_id,name,description,created_at) values(?,?,?,?,?)"
 
-	vaultId := uuid.NewString()
-
-	var vault Vault
-
-	result, err := r.dbconn.ExecContext(ctx, sqlStmt, vaultId, ownerId, name, description, created_at)
+	result, err := r.dbconn.ExecContext(ctx, sqlStmt, vault.Id, vault.Owner_id, vault.Name, vault.Description, vault.Created_at)
 
 	if err != nil {
 		return vault, err
@@ -75,6 +71,7 @@ func (r *VaultRepository) InsertVault(ctx context.Context, ownerId string, name 
 	rowsAffected, _ := result.RowsAffected()
 
 	if rowsAffected == 0 {
+		log.Error("failed inserting data")
 		return vault, errors.New("could not insert new vault")
 	}
 
