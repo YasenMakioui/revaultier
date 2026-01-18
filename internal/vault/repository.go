@@ -65,6 +65,7 @@ func (r *VaultRepository) InsertVault(ctx context.Context, vault Vault) (Vault, 
 	result, err := r.dbconn.ExecContext(ctx, sqlStmt, vault.Id, vault.Owner_id, vault.Name, vault.Description, vault.Created_at)
 
 	if err != nil {
+		log.Error(err)
 		return vault, err
 	}
 
@@ -84,6 +85,7 @@ func (r *VaultRepository) DeleteVault(ctx context.Context, vaultId string) error
 	result, err := r.dbconn.ExecContext(ctx, sqlStmt, vaultId)
 
 	if err != nil {
+		log.Error(err)
 		return err
 	}
 
@@ -91,6 +93,26 @@ func (r *VaultRepository) DeleteVault(ctx context.Context, vaultId string) error
 
 	if rowsAffected == 0 {
 		log.Error("tried to delete a non-existent vault")
+		return errors.New("vault not found")
+	}
+
+	return nil
+}
+
+func (r *VaultRepository) UpdateVault(ctx context.Context, name string, description string, vaultId string) error {
+	sqlStmt := "UPDATE vault SET name = ?, description = ? WHERE id = ?"
+
+	result, err := r.dbconn.ExecContext(ctx, sqlStmt, name, description, vaultId)
+
+	if err != nil {
+		log.Error(err)
+		return err
+	}
+
+	rowsAffected, _ := result.RowsAffected()
+
+	if rowsAffected == 0 {
+		log.Error("tried to update a non-existent vault")
 		return errors.New("vault not found")
 	}
 

@@ -78,3 +78,16 @@ func (s *VaultService) DeleteVaultService(ctx context.Context, vaultId string) e
 
 	return nil
 }
+
+func (s *VaultService) UpdateVaultService(ctx context.Context, v *VaultDTO, vaultId string) error {
+
+	if v.Name == "" {
+		return errors.New("name is empty")
+	}
+
+	if err := s.VaultRepository.UpdateVault(ctx, v.Name, v.Description, vaultId); err != nil {
+		return err
+	}
+
+	return nil
+}

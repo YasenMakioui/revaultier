@@ -93,6 +93,27 @@ func (h *VaultHandler) DeleteVaultHandler(c echo.Context) error {
 	return c.NoContent(http.StatusOK)
 }
 
+func (h *VaultHandler) UpdateVaultHandler(c echo.Context) error {
+
+	ctx := c.Request().Context()
+
+	vaultId := c.Param("id")
+
+	v := new(VaultDTO)
+
+	if err := c.Bind(v); err != nil {
+		return c.JSON(http.StatusBadRequest, ErrorResponse{Error: "bad request"})
+	}
+
+	if err := h.VaultService.UpdateVaultService(ctx, v, vaultId); err != nil {
+		return c.NoContent(http.StatusNotFound)
+	}
+
+	return c.NoContent(http.StatusOK)
+}
+
+// Helpers
+
 func getUserId(c echo.Context) (string, error) {
 
 	token := c.Get("user").(*jwt.Token)
