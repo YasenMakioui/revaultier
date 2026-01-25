@@ -21,9 +21,9 @@ func NewCardService(cfg *configuration.Config, cr *CardRepository) *CardService 
 	}
 }
 
-func (s *CardService) GetCardService(ctx context.Context, vaultId string, cardId string) (Card, error) {
+func (s *CardService) GetCardService(ctx context.Context, vaultId string, cardId string, ownerId string) (Card, error) {
 
-	card, err := s.CardRepository.GetCard(ctx, vaultId, cardId)
+	card, err := s.CardRepository.GetCard(ctx, vaultId, cardId, ownerId)
 
 	if err != nil {
 		if err == sql.ErrNoRows {
@@ -35,3 +35,5 @@ func (s *CardService) GetCardService(ctx context.Context, vaultId string, cardId
 
 	return card, nil
 }
+
+//func (s *CardService) GetCardsService(ctx context.Context, )

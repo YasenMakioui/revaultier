@@ -16,13 +16,13 @@ func NewCardRepository(db *sql.DB) *CardRepository {
 	return &CardRepository{dbconn: db}
 }
 
-func (r *CardRepository) GetCard(ctx context.Context, vaultId string, cardId string) (Card, error) {
+func (r *CardRepository) GetCard(ctx context.Context, vaultId string, cardId string, ownerId string) (Card, error) {
 
 	sqlStmt := "SELECT C.* FROM card JOIN vault v on c.vault_id = v.id WHERE c.id = ? AND v.id = ? AND v.owner_id = ?"
 
 	var card Card
 
-	err := r.dbconn.QueryRowContext(ctx, sqlStmt, vaultId, cardId).Scan(&card.Id, &card.Vault_id, &card.Name, &card.Description, &card.Created_at, &card.File)
+	err := r.dbconn.QueryRowContext(ctx, sqlStmt, cardId, vaultId, ownerId).Scan(&card.Id, &card.Vault_id, &card.Name, &card.Description, &card.Created_at, &card.File)
 
 	if err != nil {
 		return Card{}, err
@@ -31,13 +31,13 @@ func (r *CardRepository) GetCard(ctx context.Context, vaultId string, cardId str
 	return card, err
 }
 
-func (r *CardRepository) GetCards(ctx context.Context, vaultId string) ([]Card, error) {
+func (r *CardRepository) GetCards(ctx context.Context, vaultId string, ownerId string) ([]Card, error) {
 
 	sqlStmt := "SELECT C.* FROM card JOIN vault v on c.vault_id = ? WHERE v.id = ? AND v.owner_id = ?"
 
 	var cards []Card
 
-	rows, err := r.dbconn.QueryContext(ctx, sqlStmt, vaultId)
+	rows, err := r.dbconn.QueryContext(ctx, sqlStmt, vaultId, ownerId)
 
 	for rows.Next() {
 		if err != nil {
