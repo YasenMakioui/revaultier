@@ -18,11 +18,11 @@ func NewVaultRepository(db *sql.DB) *VaultRepository {
 
 func (r *VaultRepository) GetVault(ctx context.Context, vaultId string, ownerId string) (Vault, error) {
 
-	sqlStmt := "SELECT * FROM vault WHERE id=?"
+	sqlStmt := "SELECT * FROM vault WHERE id=? and owner_id =?"
 
 	var vault Vault
 
-	err := r.dbconn.QueryRowContext(ctx, sqlStmt, vaultId).Scan(&vault.Id, &vault.Owner_id, &vault.Name, &vault.Description, &vault.Created_at)
+	err := r.dbconn.QueryRowContext(ctx, sqlStmt, vaultId, ownerId).Scan(&vault.Id, &vault.Owner_id, &vault.Name, &vault.Description, &vault.Created_at)
 
 	if err != nil {
 		return Vault{}, err
@@ -79,8 +79,8 @@ func (r *VaultRepository) InsertVault(ctx context.Context, vault Vault) (Vault, 
 	return vault, nil
 }
 
-func (r *VaultRepository) DeleteVault(ctx context.Context, vaultId string) error {
-	sqlStmt := "DELETE FROM vault WHERE id = ?"
+func (r *VaultRepository) DeleteVault(ctx context.Context, vaultId string, ownerId string) error {
+	sqlStmt := "DELETE FROM vault WHERE id = ? and owner_id =?"
 
 	result, err := r.dbconn.ExecContext(ctx, sqlStmt, vaultId)
 
@@ -99,8 +99,8 @@ func (r *VaultRepository) DeleteVault(ctx context.Context, vaultId string) error
 	return nil
 }
 
-func (r *VaultRepository) UpdateVault(ctx context.Context, name string, description string, vaultId string) error {
-	sqlStmt := "UPDATE vault SET name = ?, description = ? WHERE id = ?"
+func (r *VaultRepository) UpdateVault(ctx context.Context, name string, description string, vaultId string, owner_id string) error {
+	sqlStmt := "UPDATE vault SET name = ?, description = ? WHERE id = ? and owner_id = ?"
 
 	result, err := r.dbconn.ExecContext(ctx, sqlStmt, name, description, vaultId)
 

@@ -1,4 +1,5 @@
 Add the sub claim in JWT to add the uuid instead of the username - DONE
 Add card table to the database schema - DONE
-Add post vault 
+Add post vault -DONE
 Add card resource 
+Make queries more secure using always the owner_id - DONE

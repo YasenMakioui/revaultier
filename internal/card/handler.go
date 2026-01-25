@@ -15,5 +15,17 @@ func NewCardHandler(cs *CardService) *CardHandler {
 }
 
 func (h *CardHandler) GetCardHandler(c echo.Context) error {
-	return c.String(http.StatusOK, "card")
+
+	ctx := c.Request().Context()
+
+	vaultId := c.Param("id")
+	cardId := c.Param("cardId")
+
+	card, err := h.CardService.GetCardService(ctx, vaultId, cardId)
+
+	if err != nil || card.Id == "" {
+		return c.JSON(http.StatusNotFound, ErrorResponse{Error: "card not found"})
+	}
+
+	return c.JSON(http.StatusOK, card)
 }

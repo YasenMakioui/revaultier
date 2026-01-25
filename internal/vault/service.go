@@ -43,7 +43,7 @@ func (s *VaultService) GetVaultsService(ctx context.Context, ownerId string) ([]
 	return vaults, err
 }
 
-func (s *VaultService) CreateVaultService(ctx context.Context, owner_id string, v *VaultDTO) (Vault, error) {
+func (s *VaultService) CreateVaultService(ctx context.Context, ownerId string, v *VaultDTO) (Vault, error) {
 
 	if v.Name == "" {
 		return Vault{}, errors.New("name is empty")
@@ -55,7 +55,7 @@ func (s *VaultService) CreateVaultService(ctx context.Context, owner_id string, 
 
 	vault := Vault{
 		Id:          vaultId,
-		Owner_id:    owner_id,
+		Owner_id:    ownerId,
 		Name:        v.Name,
 		Description: v.Description,
 		Created_at:  createdAt,
@@ -70,22 +70,22 @@ func (s *VaultService) CreateVaultService(ctx context.Context, owner_id string, 
 	return vault, nil
 }
 
-func (s *VaultService) DeleteVaultService(ctx context.Context, vaultId string) error {
+func (s *VaultService) DeleteVaultService(ctx context.Context, vaultId string, ownerId string) error {
 
-	if err := s.VaultRepository.DeleteVault(ctx, vaultId); err != nil {
+	if err := s.VaultRepository.DeleteVault(ctx, vaultId, ownerId); err != nil {
 		return err
 	}
 
 	return nil
 }
 
-func (s *VaultService) UpdateVaultService(ctx context.Context, v *VaultDTO, vaultId string) error {
+func (s *VaultService) UpdateVaultService(ctx context.Context, v *VaultDTO, vaultId string, ownerId string) error {
 
 	if v.Name == "" {
 		return errors.New("name is empty")
 	}
 
-	if err := s.VaultRepository.UpdateVault(ctx, v.Name, v.Description, vaultId); err != nil {
+	if err := s.VaultRepository.UpdateVault(ctx, v.Name, v.Description, vaultId, ownerId); err != nil {
 		return err
 	}
 

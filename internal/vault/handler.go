@@ -84,9 +84,15 @@ func (h *VaultHandler) DeleteVaultHandler(c echo.Context) error {
 
 	ctx := c.Request().Context()
 
+	userId, err := getUserId(c)
+
+	if err != nil {
+		return c.JSON(http.StatusInternalServerError, ErrorResponse{Error: "no subject found in claims"})
+	}
+
 	vaultId := c.Param("id")
 
-	if err := h.VaultService.DeleteVaultService(ctx, vaultId); err != nil {
+	if err := h.VaultService.DeleteVaultService(ctx, vaultId, userId); err != nil {
 		return c.NoContent(http.StatusNotFound)
 	}
 
@@ -97,6 +103,12 @@ func (h *VaultHandler) UpdateVaultHandler(c echo.Context) error {
 
 	ctx := c.Request().Context()
 
+	userId, err := getUserId(c)
+
+	if err != nil {
+		return c.JSON(http.StatusInternalServerError, ErrorResponse{Error: "no subject found in claims"})
+	}
+
 	vaultId := c.Param("id")
 
 	v := new(VaultDTO)
@@ -105,7 +117,7 @@ func (h *VaultHandler) UpdateVaultHandler(c echo.Context) error {
 		return c.JSON(http.StatusBadRequest, ErrorResponse{Error: "bad request"})
 	}
 
-	if err := h.VaultService.UpdateVaultService(ctx, v, vaultId); err != nil {
+	if err := h.VaultService.UpdateVaultService(ctx, v, vaultId, userId); err != nil {
 		return c.NoContent(http.StatusNotFound)
 	}
 
